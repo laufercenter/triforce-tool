@@ -2,7 +2,6 @@
 #include <config.h>
 #endif
 
-#include "tft.h"
 
 main()
 {
