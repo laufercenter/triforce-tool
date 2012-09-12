@@ -28,8 +28,8 @@ main()
 	
 	DataFile df3("/home/nils/seawater/nonpolar/fluorene.gro",MapCSV);
 	Molecule *mol;
-	//mol = df3.digestGRO(*top);
-	mol = new Molecule(*top);
+	mol = df3.digestGRO(*top);
+	//mol = new Molecule(*top);
 
 	/*
 	//testcase 0 (single occlusion)
@@ -39,13 +39,13 @@ main()
 	mol->addRealAtom(1,1.3,-0.5,string("C1"));
 	*/
 	
-	
+	/*
 	//testcase 1 (outside / inside)
 	mol->addRealAtom(0,-1.5,0,string("C1"));
 	mol->addRealAtom(0,1.3,0.5,string("C1"));
 	mol->addRealAtom(0,1.3,-0.5,string("C1"));
 	mol->addRealAtom(0,1.3,-1.5,string("C1"));
-	
+	*/
 	
 	/*
 	//testcase 2 (both)
