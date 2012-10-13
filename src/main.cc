@@ -16,9 +16,14 @@ void readPDB(string name){
 main()
 {
 	//printf("it has started....\n");
-	DataFile df("/home/nils/triforce/dev/dataConvex.dat",Binary);
-	Data3D *dat;
-	dat = df.digest3DBinaryTable();
+	DataFile df0("/home/nils/triforce/dev/dataConvex.dat",Binary);
+	DataFile df1("/home/nils/triforce/dev/dataConcave.dat",Binary);
+	Data3D *dat0;
+	Data3D *dat1;
+	dat0 = df0.digest3DBinaryTable();
+	dat1 = df1.digest3DBinaryTable();
+	
+	dat1->print();
 	
 	DataFile df2("/home/nils/seawater/nonpolar/fluorene.top",MapCSV);
 	Topology *top;
@@ -83,15 +88,23 @@ main()
 	
 	//c->print();
 	
-	Interpolation interpolator(dat);
+	Interpolation interpolator0(dat0);
+	Interpolation interpolator1(dat1);
 	
 	Tessellation tessellation(*mol);
 	tessellation.build();
 	
-	Integrator integrator(&tessellation, &interpolator, mol);
-	double area = integrator.integrate();
+	IntegratorTriforce integrator(&interpolator0, &interpolator1);
+	double area = integrator.integrate(mol, &tessellation);
 	
-	printf("total area of molecule: %f\n",area);
+	IntegratorStatistical integrator2(10000000);
+	double area2 = integrator2.integrate(mol, &tessellation);
+
+	IntegratorGaussBonnet integrator4;
+	double area3 = integrator4.integrate(mol, &tessellation);
+	
+	
+	printf("total area of molecule: %f, %f, %f\n",area,area2,area3);
 	
 	
 }
