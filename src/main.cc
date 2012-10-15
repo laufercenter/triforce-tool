@@ -39,9 +39,9 @@ main()
 	
 	//testcase 0 (single occlusion)
 	mol->addRealAtom(0,-1.5,0,string("C1"));
-	mol->addRealAtom(0,1.3,0.5,string("C1"));
-	mol->addRealAtom(0,1.3,-0.5,string("C1"));
-	mol->addRealAtom(1,1.3,-0.5,string("C1"));
+	mol->addRealAtom(0,1.2,1.45,string("C1"));
+	mol->addRealAtom(0,1.2,-1.45,string("C1"));
+	//mol->addRealAtom(1,1.3,-0.5,string("C1"));
 	
 	
 	/*
@@ -97,7 +97,7 @@ main()
 	IntegratorTriforce integrator(&interpolator0, &interpolator1);
 	double area = integrator.integrate(mol, &tessellation);
 	
-	IntegratorStatistical integrator2(10000000);
+	IntegratorStatistical integrator2(10000);
 	double area2 = integrator2.integrate(mol, &tessellation);
 
 	IntegratorGaussBonnet integrator4;
