@@ -33,16 +33,16 @@ main()
 	
 	DataFile df3("/home/nils/seawater/nonpolar/fluorene.gro",MapCSV);
 	Molecule *mol;
-	//mol = df3.digestGRO(*top);
-	mol = new Molecule(*top);
+	mol = df3.digestGRO(*top);
+	//mol = new Molecule(*top);
 
-	
+	/*
 	//testcase 0 (single occlusion)
 	mol->addRealAtom(0,-1.5,0,string("C1"));
-	mol->addRealAtom(0,1.2,1.45,string("C1"));
-	mol->addRealAtom(0,1.2,-1.45,string("C1"));
-	//mol->addRealAtom(1,1.3,-0.5,string("C1"));
-	
+	mol->addRealAtom(0,1.2,1.15,string("C1"));
+	mol->addRealAtom(0,1.2,-1.15,string("C1"));
+	mol->addRealAtom(1,1.3,-0.5,string("C1"));
+	*/
 	
 	/*
 	//testcase 1 (outside / inside)
@@ -92,19 +92,28 @@ main()
 	Interpolation interpolator1(dat1);
 	
 	Tessellation tessellation(*mol);
-	tessellation.build();
+	tessellation.build(true);
 	
 	IntegratorTriforce integrator(&interpolator0, &interpolator1);
 	double area = integrator.integrate(mol, &tessellation);
 	
+	
+	printf("total area of molecule: %f\n",area);
+	
+	/*
+	Tessellation tessellation2(*mol);
+	tessellation2.build(false);
+	
 	IntegratorStatistical integrator2(10000);
-	double area2 = integrator2.integrate(mol, &tessellation);
+	double area2 = integrator2.integrate(mol, &tessellation2);
 
-	IntegratorGaussBonnet integrator4;
-	double area3 = integrator4.integrate(mol, &tessellation);
+	IntegratorGaussBonnet integrator3;
+	double area3 = integrator3.integrate(mol, &tessellation2);
 	
+	IntegratorNumerical integrator4(1000);
+	double area4 = integrator4.integrate(mol, &tessellation2);
 	
-	printf("total area of molecule: %f, %f, %f\n",area,area2,area3);
-	
+	printf("total area of molecule: %f, %f, %f, %f\n",area,area2,area3,area4);
+	*/
 	
 }
