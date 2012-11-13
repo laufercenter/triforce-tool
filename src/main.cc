@@ -39,9 +39,9 @@ main()
 	/*
 	//testcase 0 (single occlusion)
 	mol->addRealAtom(0,-1.5,0,string("C1"));
-	mol->addRealAtom(0,1.2,1.15,string("C1"));
-	mol->addRealAtom(0,1.2,-1.15,string("C1"));
-	mol->addRealAtom(1,1.3,-0.5,string("C1"));
+	mol->addRealAtom(-1,1.2,1.15,string("C1"));
+	mol->addRealAtom(-1,1.2,-1.15,string("C1"));
+	mol->addRealAtom(0.8,0,0,string("C1"));
 	*/
 	
 	/*
@@ -91,20 +91,49 @@ main()
 	Interpolation interpolator0(dat0);
 	Interpolation interpolator1(dat1);
 	
+/*	
+	for(int i=0; i<10; ++i){
+		Vector v(3);
+		double r;
+		v(0) = i*1.7/1000.0;
+		v(1) = 1.1;
+		v(2) = 0.75;
+		
+		r = interpolator0.interpolate(v);
+		
+		printf("%f %f\n",v(2),r);
+		
+	}
+	exit(0);
+*/	
+	
 	Tessellation tessellation(*mol);
 	tessellation.build(true);
 	
 	IntegratorTriforce integrator(&interpolator0, &interpolator1);
 	double area = integrator.integrate(mol, &tessellation);
 	
+	IntegratorNumerical integrator4(1000);
+	double area4 = integrator4.integrate(mol, &tessellation);
 	
-	printf("total area of molecule: %f\n",area);
+	
+	
+	printf("total area of molecule: %f %f\n",area,area4);
+	
 	
 	/*
+	
 	Tessellation tessellation2(*mol);
 	tessellation2.build(false);
 	
-	IntegratorStatistical integrator2(10000);
+	IntegratorTriforce integrator5(&interpolator0, &interpolator1);
+	double area5 = integrator5.integrate(mol, &tessellation2);
+	
+	
+	printf("total area of molecule: %f %f\n",area,area5);
+	
+	
+	IntegratorStatistical integrator2(1000);
 	double area2 = integrator2.integrate(mol, &tessellation2);
 
 	IntegratorGaussBonnet integrator3;
