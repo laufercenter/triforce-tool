@@ -23,7 +23,7 @@ main()
 	dat0 = df0.digest3DBinaryTable();
 	dat1 = df1.digest3DBinaryTable();
 	
-	dat1->print();
+	dat1->print(); 
 	
 	DataFile df2("/home/nils/seawater/nonpolar/fluorene.top",MapCSV);
 	Topology *top;
