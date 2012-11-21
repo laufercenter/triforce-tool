@@ -104,7 +104,7 @@ main()
 		printf("%f %f\n",v(2),r);
 		
 	}
-	exit(0);
+	exit(0);         
 */	
 	
 	Tessellation tessellation(*mol);
