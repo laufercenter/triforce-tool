@@ -113,7 +113,7 @@ main()
 	IntegratorTriforce integrator(&interpolator0, &interpolator1);
 	double area = integrator.integrate(mol, &tessellation);
 	
-	IntegratorNumerical integrator4(1000);
+	IntegratorNumerical integrator4(4000);
 	double area4 = integrator4.integrate(mol, &tessellation);
 	
 	
