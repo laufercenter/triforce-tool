@@ -23,7 +23,7 @@ main()
 	dat0 = df0.digest3DBinaryTable();
 	dat1 = df1.digest3DBinaryTable();
 	
-	dat1->print(); 
+	//dat1->print(); 
 	
 	DataFile df2("/home/nils/seawater/nonpolar/fluorene.top",MapCSV);
 	Topology *top;
@@ -33,8 +33,8 @@ main()
 	
 	DataFile df3("/home/nils/seawater/nonpolar/fluorene.gro",MapCSV);
 	Molecule *mol;
-	mol = df3.digestGRO(*top);
-	//mol = new Molecule(*top);
+	//mol = df3.digestGRO(*top);
+	mol = new Molecule(*top);
 
 	/*
 	//testcase 0 (single occlusion)
@@ -68,13 +68,13 @@ main()
 	mol->addRealAtom(0,1.85,0,string("C1"));
 	*/
 	
-	/*
+	
 	//testcase 4 (singles)
 	mol->addRealAtom(0,-1.5,0,string("C1"));
 	mol->addRealAtom(1.5,1.3,1,string("C1"));
 	mol->addRealAtom(1.5,1.3,-1,string("C1"));
 	mol->addRealAtom(-1.5,1.3,0,string("C1"));
-	*/
+	
 	
 	/*
 	//testcase 4 (triforce)
@@ -113,7 +113,10 @@ main()
 	IntegratorTriforce integrator(&interpolator0, &interpolator1);
 	double area = integrator.integrate(mol, &tessellation);
 	
-	IntegratorNumerical integrator4(4000);
+	//IntegratorGaussBonnet integrator3;
+	//double area3 = integrator3.integrate(mol, &tessellation2);
+	
+	IntegratorNumerical integrator4(1000);
 	double area4 = integrator4.integrate(mol, &tessellation);
 	
 	
