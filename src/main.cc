@@ -18,10 +18,20 @@ main()
 	//printf("it has started....\n");
 	DataFile df0("/home/nils/triforce/dev/dataConvex.dat",Binary);
 	DataFile df1("/home/nils/triforce/dev/dataConcave.dat",Binary);
+	DataFile df4("/home/nils/triforce/dev/dataPHI.dat",Binary);
 	Data3D *dat0;
 	Data3D *dat1;
+	Data3D *dat2;
+	Surface3D *surf0;
+	Surface3D *surf1;
 	dat0 = df0.digest3DBinaryTable();
 	dat1 = df1.digest3DBinaryTable();
+	
+	surf0 = new Surface3D(dat0);
+	surf1 = new Surface3D(dat1);
+	
+	
+	dat2 = df4.digest3DBinaryTable();
 	
 	//dat1->print(); 
 	
@@ -33,8 +43,8 @@ main()
 	
 	DataFile df3("/home/nils/seawater/nonpolar/fluorene.gro",MapCSV);
 	Molecule *mol;
-	//mol = df3.digestGRO(*top);
-	mol = new Molecule(*top);
+	mol = df3.digestGRO(*top);
+	//mol = new Molecule(*top);
 
 	/*
 	//testcase 0 (single occlusion)
@@ -70,10 +80,11 @@ main()
 	
 	
 	//testcase 4 (singles)
-	mol->addRealAtom(0,-1.5,0,string("C1"));
-	mol->addRealAtom(1.5,1.3,1,string("C1"));
-	mol->addRealAtom(1.5,1.3,-1,string("C1"));
-	mol->addRealAtom(-1.5,1.3,0,string("C1"));
+	//mol->addRealAtom(0,0,0,string("C1"));
+	//mol->addRealAtom(1.5,1.3,1,string("C1"));
+	//mol->addRealAtom(1.5,1.3,-1,string("C1"));
+	//mol->addRealAtom(0,2,0,string("C1"));
+	//mol->addRealAtom(2,0,2,string("C1"));
 	
 	
 	/*
@@ -84,12 +95,13 @@ main()
 	mol->addRealAtom(-1.2,1.3,0,string("C1"));
 	*/
 	
-	//mol->print();
+	mol->print();
 	
 	//c->print();
 	
 	Interpolation interpolator0(dat0);
 	Interpolation interpolator1(dat1);
+	Interpolation interpolator2(dat2);
 	
 /*	
 	for(int i=0; i<10; ++i){
@@ -107,6 +119,7 @@ main()
 	exit(0);         
 */	
 	
+	//Tessellation tessellation(*mol, &interpolator2);
 	Tessellation tessellation(*mol);
 	tessellation.build(true);
 	
@@ -116,7 +129,7 @@ main()
 	//IntegratorGaussBonnet integrator3;
 	//double area3 = integrator3.integrate(mol, &tessellation2);
 	
-	IntegratorNumerical integrator4(1000);
+	IntegratorNumerical integrator4(100);
 	double area4 = integrator4.integrate(mol, &tessellation);
 	
 	
