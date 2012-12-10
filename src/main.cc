@@ -14,7 +14,7 @@ void readPDB(string name){
 
 
 main()
-{
+{ 
 	//printf("it has started....\n");
 	DataFile df0("/home/nils/triforce/dev/dataConvex.dat",Binary);
 	DataFile df1("/home/nils/triforce/dev/dataConcave.dat",Binary);
