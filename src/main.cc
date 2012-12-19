@@ -18,48 +18,18 @@ main()
 	//printf("it has started....\n");
 	DataFile df0("/home/nils/triforce/dev/dataConvex.dat",Binary);
 	DataFile df1("/home/nils/triforce/dev/dataConcave.dat",Binary);
-	
-	DataFile df0forces0("/home/nils/triforce/dev/dataConvex0.dat",Binary);
-	DataFile df0forces1("/home/nils/triforce/dev/dataConvex1.dat",Binary);
-	DataFile df0forces2("/home/nils/triforce/dev/dataConvex2.dat",Binary);
-	
-	DataFile df1forces0("/home/nils/triforce/dev/dataConcave0.dat",Binary);
-	DataFile df1forces1("/home/nils/triforce/dev/dataConcave1.dat",Binary);
-	DataFile df1forces2("/home/nils/triforce/dev/dataConcave2.dat",Binary);
-
-	
+	DataFile df4("/home/nils/triforce/dev/dataPHI.dat",Binary);
 	Data3D *dat0;
 	Data3D *dat1;
-	
-	Data3D *dat0forces0;
-	Data3D *dat0forces1;
-	Data3D *dat0forces2;
-
-	Data3D *dat1forces0;
-	Data3D *dat1forces1;
-	Data3D *dat1forces2;
-	
+	Data3D *dat2;
+	Surface3D *surf0;
+	Surface3D *surf1;
 	dat0 = df0.digest3DBinaryTable();
 	dat1 = df1.digest3DBinaryTable();
 	
-	dat0forces0 = df0forces0.digest3DBinaryTable();
-	dat0forces1 = df0forces1.digest3DBinaryTable();
-	dat0forces2 = df0forces2.digest3DBinaryTable();
+	surf0 = new Surface3D(dat0);
+	surf1 = new Surface3D(dat1);
 	
-	dat1forces0 = df1forces0.digest3DBinaryTable();
-	dat1forces1 = df1forces1.digest3DBinaryTable();
-	dat1forces2 = df1forces2.digest3DBinaryTable();
-	
-	Surface3D* surf0 = new Surface3D(dat0);
-	Surface3D* surf1 = new Surface3D(dat1);
-	
-	Surface3D* surf0forces0 = new Surface3D(dat0forces0);
-	Surface3D* surf0forces1 = new Surface3D(dat0forces1);
-	Surface3D* surf0forces2 = new Surface3D(dat0forces2);
-
-	Surface3D* surf1forces0 = new Surface3D(dat1forces0);
-	Surface3D* surf1forces1 = new Surface3D(dat1forces1);
-	Surface3D* surf1forces2 = new Surface3D(dat1forces2);
 	
 	dat2 = df4.digest3DBinaryTable();
 	
@@ -129,16 +99,9 @@ main()
 	
 	//c->print();
 	
-	Interpolation interpolator0(dat0);
-	Interpolation interpolator1(dat1);
-	
-	Interpolation interpolator0forces0(dat0forces0);
-	Interpolation interpolator0forces1(dat0forces1);
-	Interpolation interpolator0forces2(dat0forces2);
-	
-	Interpolation interpolator1forces0(dat1forces0);
-	Interpolation interpolator1forces1(dat1forces1);
-	Interpolation interpolator1forces2(dat1forces2);
+	Interpolation interpolator0(surf0);
+	Interpolation interpolator1(surf1);
+	Interpolation interpolator2(dat2);
 	
 /*	
 	for(int i=0; i<10; ++i){
@@ -160,7 +123,7 @@ main()
 	Tessellation tessellation(*mol);
 	tessellation.build(true);
 	
-	IntegratorTriforce integrator(&interpolator0, &interpolator0forces0, &interpolator0forces1, &interpolator0forces2, &interpolator1, &interpolator0forces0, &interpolator1forces1, &interpolator2forces2);
+	IntegratorTriforce integrator(&interpolator0, &interpolator1);
 	double area = integrator.integrate(mol, &tessellation);
 	
 	//IntegratorGaussBonnet integrator3;
