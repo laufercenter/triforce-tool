@@ -16,22 +16,16 @@ void readPDB(string name){
 main()
 { 
 	//printf("it has started....\n");
-	DataFile df0("/home/nils/triforce/dev/dataConvex.dat",Binary);
 	DataFile df1("/home/nils/triforce/dev/dataConcave.dat",Binary);
-	DataFile df4("/home/nils/triforce/dev/dataPHI.dat",Binary);
 	Data3D *dat0;
 	Data3D *dat1;
-	Data3D *dat2;
 	Surface3D *surf0;
 	Surface3D *surf1;
-	dat0 = df0.digest3DBinaryTable();
 	dat1 = df1.digest3DBinaryTable();
 	
-	surf0 = new Surface3D(dat0);
 	surf1 = new Surface3D(dat1);
 	
 	
-	dat2 = df4.digest3DBinaryTable();
 	
 	//dat1->print(); 
 	
@@ -99,9 +93,7 @@ main()
 	
 	//c->print();
 	
-	Interpolation interpolator0(surf0);
 	Interpolation interpolator1(surf1);
-	Interpolation interpolator2(dat2);
 	
 /*	
 	for(int i=0; i<10; ++i){
@@ -123,7 +115,7 @@ main()
 	Tessellation tessellation(*mol);
 	tessellation.build(true);
 	
-	IntegratorTriforce integrator(&interpolator0, &interpolator1);
+	IntegratorTriforce integrator(&interpolator1);
 	double area = integrator.integrate(mol, &tessellation);
 	
 	//IntegratorGaussBonnet integrator3;
