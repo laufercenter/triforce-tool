@@ -16,28 +16,34 @@ void readPDB(string name){
 main()
 { 
 	//printf("it has started....\n");
+	DataFile df0("/home/nils/triforce/dev/dataConcave.dat",Binary);
 	DataFile df1("/home/nils/triforce/dev/dataConcave.dat",Binary);
-	Data3D *dat0;
-	Data3D *dat1;
-	Surface3D *surf0;
-	Surface3D *surf1;
-	dat1 = df1.digest3DBinaryTable();
+	DataFile df2("/home/nils/triforce/dev/dataConcave.dat",Binary);
+	DataFile df3("/home/nils/triforce/dev/dataConcave.dat",Binary);
+	Data3D* dat0 = df0.digest3DBinaryTable();
+	Data3D* dat1 = df1.digest3DBinaryTable();
+	Data3D* dat2 = df2.digest3DBinaryTable();
+	Data3D* dat3 = df3.digest3DBinaryTable();
 	
-	surf1 = new Surface3D(dat1);
+	Surface3D* surf0 = new Surface3D(dat0);
+	Surface3D* surf1 = new Surface3D(dat1);
+	Surface3D* surf2 = new Surface3D(dat2);
+	Surface3D* surf3 = new Surface3D(dat3);
 	
 	
 	
 	//dat1->print(); 
 	
-	DataFile df2("/home/nils/seawater/nonpolar/fluorene.top",MapCSV);
+	DataFile dftop("/home/nils/seawater/nonpolar/fluorene.top",MapCSV);
 	Topology *top;
-	top = df2.digestTOP();
+	top = dftop.digestTOP();
 	
 	//b->print();
 	
-	DataFile df3("/home/nils/seawater/nonpolar/fluorene.gro",MapCSV);
-	Molecule *mol;
-	mol = df3.digestGRO(*top);
+	DataFile dfgro("/home/nils/seawater/nonpolar/fluorene.gro",MapCSV);
+	Molecule *mol, *mol2;
+	mol = dfgro.digestGRO(*top);
+	mol2 = dfgro.digestGRO(*top);
 	//mol = new Molecule(*top);
 
 	/*
@@ -93,7 +99,10 @@ main()
 	
 	//c->print();
 	
+	Interpolation interpolator0(surf0);
 	Interpolation interpolator1(surf1);
+	Interpolation interpolator2(surf2);
+	Interpolation interpolator3(surf3);
 	
 /*	
 	for(int i=0; i<10; ++i){
@@ -115,14 +124,17 @@ main()
 	Tessellation tessellation(*mol);
 	tessellation.build(true);
 	
-	IntegratorTriforce integrator(&interpolator1);
+	IntegratorTriforce integrator(&interpolator0, &interpolator1, &interpolator2, &interpolator3);
 	double area = integrator.integrate(mol, &tessellation);
 	
 	//IntegratorGaussBonnet integrator3;
 	//double area3 = integrator3.integrate(mol, &tessellation2);
 	
-	IntegratorNumerical integrator4(100);
-	double area4 = integrator4.integrate(mol, &tessellation);
+	IntegratorNumerical integrator4(30);
+	double area4 = integrator4.integrate(mol2, &tessellation);
+	
+	mol->print();
+	mol2->print();
 	
 	
 	
