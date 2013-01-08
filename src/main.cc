@@ -45,14 +45,19 @@ main()
 	mol = dfgro.digestGRO(*top);
 	mol2 = dfgro.digestGRO(*top);
 	//mol = new Molecule(*top);
-
+	//mol2=mol;
+	
 	/*
 	//testcase 0 (single occlusion)
-	mol->addRealAtom(0,-1.5,0,string("C1"));
-	mol->addRealAtom(-1,1.2,1.15,string("C1"));
-	mol->addRealAtom(-1,1.2,-1.15,string("C1"));
-	mol->addRealAtom(0.8,0,0,string("C1"));
+	mol->addRealAtom(0,0,0,string("C1"));
+	mol->addRealAtom(0,4.2,2.15,string("C1"));
+	mol->addRealAtom(0,4.2,-2.15,string("C1"));
+	//mol->addRealAtom(0,4.2,0,string("C1"));
+	mol->addRealAtom(-0.6,2,0,6.8,1);
 	*/
+	
+
+	
 	
 	/*
 	//testcase 1 (outside / inside)
@@ -124,6 +129,8 @@ main()
 	Tessellation tessellation(*mol);
 	tessellation.build(true);
 	
+	mol->print();
+	
 	IntegratorTriforce integrator(&interpolator0, &interpolator1, &interpolator2, &interpolator3);
 	double area = integrator.integrate(mol, &tessellation);
 	
@@ -131,7 +138,7 @@ main()
 	//double area3 = integrator3.integrate(mol, &tessellation2);
 	
 	IntegratorNumerical integrator4(30);
-	double area4 = integrator4.integrate(mol2, &tessellation);
+	double area4 = integrator4.integrate(mol2);
 	
 	mol->print();
 	mol2->print();
