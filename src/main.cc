@@ -102,10 +102,10 @@ main()
 { 
 	
 	
-	df0 = new DataFile("/home/nils/triforce/dev/dataConcave.dat",Binary);
-	df1 = new DataFile("/home/nils/triforce/dev/dataConcave0.dat",Binary);
-	df2 = new DataFile("/home/nils/triforce/dev/dataConcave1.dat",Binary);
-	df3 = new DataFile("/home/nils/triforce/dev/dataConcave2.dat",Binary);
+	df0 = new DataFile("/home/nils/triforce/dev/dataConcave.dat");
+	df1 = new DataFile("/home/nils/triforce/dev/dataConcave0.dat");
+	df2 = new DataFile("/home/nils/triforce/dev/dataConcave1.dat");
+	df3 = new DataFile("/home/nils/triforce/dev/dataConcave2.dat");
 	dat0 = df0->digest3DBinaryTable();
 	dat1 = df1->digest3DBinaryTable();
 	dat2 = df2->digest3DBinaryTable();
@@ -402,6 +402,9 @@ main()
 	
 	
 	//MINIMISATION 1 *****************************************************************************
+	
+	TriforceInterface trii(string("/home/nils/triforce/dev"));
+	
 	Molecule *mol_triforce, *mol_numerical, *mol_fd;
 	
 	
@@ -415,13 +418,13 @@ main()
 	double area, area2;
 	double steplength;
 	
-	DataFile dftop("/home/nils/seawater/nonpolar/fluorene.top",MapCSV);
+	DataFile dftop(string("/home/nils/seawater/nonpolar/fluorene.top"));
 	Topology *top = dftop.digestTOP();
 	
 	
-	DataFile dfgro("/home/nils/seawater/nonpolar/fluorene.gro",MapCSV);
+	DataFile dfgro(string("/home/nils/seawater/nonpolar/fluorene.gro"));
 
-	integrator = new IntegratorTriforce(interpolator0, interpolator1, interpolator2, interpolator3);
+	//integrator = new IntegratorTriforce(interpolator0, interpolator1, interpolator2, interpolator3);
 	integratorNumerical = new IntegratorNumerical(20);
 	
 	mol_triforce = dfgro.digestGRO(*top);
@@ -440,11 +443,8 @@ main()
 	
 	for(int i=0; i < steps; ++i){
 		fprintf(stderr,"STEP: %d\n",i);
-		
-		t = new Tessellation(*mol_triforce);
-		t->build(true);
-		area = integrator->integrate(mol_triforce, t);
-		delete(t);
+
+		area = trii.calculateSurfaceArea(*mol_triforce);
 		
 		coordinates = mol_triforce->fetchCoordinates();
 		
