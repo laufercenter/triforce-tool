@@ -4,7 +4,7 @@ ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS}
 bin_PROGRAMS = tft
 tft_SOURCES = src/main.cc
 
-AM_LDFLAGS = -ltriforce-0.39 -llapack -lblas -larmadillo
+AM_LDFLAGS = -ltriforce-0.39 -llapack -lblas -larmadillo -lboost_program_options -lboost_program_options-mt
 
 dist_noinst_SCRIPTS = autogen.sh
 

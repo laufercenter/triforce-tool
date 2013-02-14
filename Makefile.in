@@ -171,7 +171,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = subdir-objects
 ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS}
 tft_SOURCES = src/main.cc
-AM_LDFLAGS = -ltriforce-0.39 -llapack -lblas -larmadillo
+AM_LDFLAGS = -ltriforce-0.39 -llapack -lblas -larmadillo -lboost_program_options -lboost_program_options-mt
 dist_noinst_SCRIPTS = autogen.sh
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
