@@ -1,0 +1,22 @@
+using gcc ;
+
+INCLUDES = 
+triforce.h
+boost/program_options.hpp ;
+
+
+lib triforce : : <name>triforce <search>/usr/local/lib ;
+lib program_options : : <name>boost_program_options <search>/usr/local/lib ;
+lib armadillo : : <name>armadillo <search>/usr/local/lib ;
+
+project tft-config : requirements <include>$(INCLUDES) ;
+
+SOURCES = 
+main.cc ;
+
+
+
+exe tft : src/$(SOURCES) triforce program_options armadillo ;
+
+install install-bin : tft : <location>/usr/bin ;
+
