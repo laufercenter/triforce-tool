@@ -5,20 +5,25 @@
 
 #include <string>
 #include <boost/program_options.hpp>
-#include "triforce-0.39/triforce.h"
+#include <boost/filesystem.hpp>
+#include <triforce.h>
 
 
 namespace po = boost::program_options;
 
+using namespace boost::filesystem;
+
 
 
 Molecule *mol, *mol_numerical;
-string libraryPath, top, gro;
+string libraryPath, top, struc;
 bool error;
 double area, area_numerical;
 int numericalDetail;
 double numericalDifference;
 int compare;
+string topMode;
+TopologyMode topm;
 
 
 
@@ -50,7 +55,8 @@ int main(int ac, char* av[])
 			("help,h", "help")
 			("library_path,l", po::value<string>(&libraryPath), "set library path")
 			("topology,t", po::value<string>(&top), "set topology file")
-			("structure,s", po::value<string>(&gro), "set structure file")
+			("structure,s", po::value<string>(&struc), "set structure file")
+			("top_mode,m", po::value<string>(&topMode)->default_value(string("gromacs")), "set topology mode")
 			("numerical_detail,n", po::value<int>(&numericalDetail)->default_value(0), "numerical detail (default off)")
 			("numerical_difference,d", po::value<double>(&numericalDifference)->default_value(0), "numerical difference (default off)")
 			("compare,c", po::value<int>(&compare)->default_value(0), "show only semi-analytical/numerical difference (default off)");
@@ -72,8 +78,8 @@ int main(int ac, char* av[])
 			error=true;
 		}
 		if(!vm.count("topology")){
-			fprintf(stderr, "topology file not set\n");
-			error=true;
+			top=libraryPath+"/generic.top";
+			topMode=string("generic");
 		}
 		if(!vm.count("structure")){
 			fprintf(stderr, "structure file not set\n");
@@ -92,19 +98,39 @@ int main(int ac, char* av[])
 	}
 	
 	
+	topm=GROMACS;
+	if(topMode.compare("generic")==0){
+		topm=GROMACS_GENERIC;
+	}
+
 	
+		
+		
 	
 	DataFile dftop(top);
-	Topology *top = dftop.digestTOP();
-	DataFile dfgro(gro);
+	Topology *top = dftop.digestTOP(topm);
+	//top->print();
+	
+	
+	DataFile dfgro(struc);
 	Molecule *mol;
-	mol = dfgro.digestGRO(*top);
+	
+	if(path(struc).extension().compare(string(".gro"))==0){
+		mol = dfgro.digestGRO(*top);
+
+	}
+	if(path(struc).extension().compare(string(".pdb"))==0){
+		mol = dfgro.digestPDB(*top);
+	}
+	
+	//mol->generateNeighbourList();
 	
 
 	TriforceInterface trii(libraryPath);
 	double area = trii.calculateSurfaceArea(*mol);
 	
 	if(compare==0){
+		//mol->printxyz();
 		mol->print();
 		printf("TOTAL AREA: %f\n",area);
 	}

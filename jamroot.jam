@@ -7,6 +7,8 @@ boost/program_options.hpp ;
 
 lib triforce : : <name>triforce <search>/usr/local/lib ;
 lib program_options : : <name>boost_program_options <search>/usr/local/lib ;
+lib filesystem : : <name>boost_filesystem <search>/usr/local/lib ;
+lib system : : <name>boost_system <search>/usr/local/lib ;
 lib armadillo : : <name>armadillo <search>/usr/local/lib ;
 
 project tft-config : requirements <include>$(INCLUDES) ;
@@ -16,7 +18,7 @@ main.cc ;
 
 
 
-exe tft : src/$(SOURCES) triforce program_options armadillo ;
+exe tft : src/$(SOURCES) triforce system program_options filesystem armadillo ;
 
 install install-bin : tft : <location>/usr/bin ;
 
