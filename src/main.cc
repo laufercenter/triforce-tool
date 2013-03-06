@@ -136,8 +136,16 @@ int main(int ac, char* av[])
 	}
 	
 	if(numericalDetail>0){
+		printf("\nNumerical evaluation\n");
+		DataFile dfgro2(struc);
 		Molecule *mol_numerical;
-		mol_numerical = dfgro.digestGRO(*top);
+		if(path(struc).extension().compare(string(".gro"))==0){
+			mol_numerical = dfgro2.digestGRO(*top);
+
+		}
+		if(path(struc).extension().compare(string(".pdb"))==0){
+			mol_numerical = dfgro2.digestPDB(*top);
+		}
 		
 		IntegratorNumerical integratorNumerical(numericalDetail,numericalDifference);
 		area_numerical = integratorNumerical.integrate(mol_numerical, -1, &progressbar);
