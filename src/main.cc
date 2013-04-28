@@ -24,6 +24,8 @@ double numericalDifference;
 int compare;
 string topMode;
 TopologyMode topm;
+unsigned int buffer;
+unsigned int slack;
 
 
 
@@ -59,7 +61,9 @@ int main(int ac, char* av[])
 			("top_mode,m", po::value<string>(&topMode)->default_value(string("gromacs")), "set topology mode")
 			("numerical_detail,n", po::value<int>(&numericalDetail)->default_value(0), "numerical detail (default off)")
 			("numerical_difference,d", po::value<double>(&numericalDifference)->default_value(0), "numerical difference (default off)")
-			("compare,c", po::value<int>(&compare)->default_value(0), "show only semi-analytical/numerical difference (default off)");
+			("compare,c", po::value<int>(&compare)->default_value(0), "show only semi-analytical/numerical difference (default off)")
+			("mld-buffer,b", po::value<unsigned int>(&buffer)->default_value(0), "use b multi layered depth buffers")
+			("slack,k", po::value<unsigned int>(&slack)->default_value(1), "use depth-buffer with slack k");
 			
 		po::variables_map vm;
 		po::store(po::parse_command_line(ac,av,desc), vm);
@@ -119,14 +123,21 @@ int main(int ac, char* av[])
 		mol = dfgro.digestGRO(*top);
 
 	}
-	if(path(struc).extension().compare(string(".pdb"))==0){
+	else if(path(struc).extension().compare(string(".pdb"))==0){
 		mol = dfgro.digestPDB(*top);
 	}
+	else if(path(struc).extension().compare(string(".xyzr"))==0){
+		mol = dfgro.digestXYZR();
+	}
+	else{
+		printf("unknown structure file extension\n");
+		exit(-1);
+	}
 	
-	//mol->generateNeighbourList();
+	mol->generateNeighbourList();
 	
 
-	TriforceInterface trii(libraryPath);
+	TriforceInterface trii(libraryPath, buffer, slack);
 	double area = trii.calculateSurfaceArea(*mol);
 	
 	if(compare==0){
