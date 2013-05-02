@@ -26,6 +26,11 @@ string topMode;
 TopologyMode topm;
 unsigned int buffer;
 unsigned int slack;
+unsigned int hydrogens;
+bool useHydrogens;
+string output;
+FILE* outputfile;
+bool usingOutputFile;
 
 
 
@@ -55,15 +60,16 @@ int main(int ac, char* av[])
 		po::options_description desc("Allowed options");
 		desc.add_options()
 			("help,h", "help")
+			("output,o", po::value<string>(&output), "set output file")
 			("library_path,l", po::value<string>(&libraryPath), "set library path")
 			("topology,t", po::value<string>(&top), "set topology file")
 			("structure,s", po::value<string>(&struc), "set structure file")
 			("top_mode,m", po::value<string>(&topMode)->default_value(string("gromacs")), "set topology mode")
 			("numerical_detail,n", po::value<int>(&numericalDetail)->default_value(0), "numerical detail (default off)")
 			("numerical_difference,d", po::value<double>(&numericalDifference)->default_value(0), "numerical difference (default off)")
-			("compare,c", po::value<int>(&compare)->default_value(0), "show only semi-analytical/numerical difference (default off)")
-			("mld-buffer,b", po::value<unsigned int>(&buffer)->default_value(0), "use b multi layered depth buffers")
-			("slack,k", po::value<unsigned int>(&slack)->default_value(1), "use depth-buffer with slack k");
+			("mld-buffer,b", po::value<unsigned int>(&buffer)->default_value(0), "use b multi layered depth buffers (default 0)")
+			("slack,k", po::value<unsigned int>(&slack)->default_value(6), "use depth-buffer with slack k (default 6)")
+			("hydrogens,y", po::value<unsigned int>(&hydrogens)->default_value(1), "use hydrogens (default on)");
 			
 		po::variables_map vm;
 		po::store(po::parse_command_line(ac,av,desc), vm);
@@ -76,19 +82,42 @@ int main(int ac, char* av[])
 		}
 		
 		
+		
+		topm=GROMACS;
+		if(topMode.compare("generic")==0){
+			topm=GROMACS_GENERIC;
+		}
+		else if(topMode.compare("elemental")==0){
+			topm=GROMACS_ELEMENTAL;
+		}
+		
+		
+		
 		error=false;
 		if(!vm.count("library_path")){
 			fprintf(stderr, "library path not set\n");
 			error=true;
 		}
 		if(!vm.count("topology")){
-			top=libraryPath+"/generic.top";
-			topMode=string("generic");
+			if(topm==GROMACS_ELEMENTAL){
+				top=libraryPath+"/elemental.top";
+			}
+			else{
+				top=libraryPath+"/generic.top";
+				topMode=string("generic");
+				topm=GROMACS_GENERIC;
+			}
 		}
 		if(!vm.count("structure")){
 			fprintf(stderr, "structure file not set\n");
 			error=true;
 		}
+		usingOutputFile=false;
+		if(vm.count("output")){
+			outputfile = fopen(output.c_str(),"w");
+			usingOutputFile=true;
+		}
+		else outputfile = stdout;
 		
 		if(error){
 			cout << desc << "\n";
@@ -101,11 +130,10 @@ int main(int ac, char* av[])
 		exit(-1);
 	}
 	
-	
-	topm=GROMACS;
-	if(topMode.compare("generic")==0){
-		topm=GROMACS_GENERIC;
-	}
+	if(hydrogens==0) useHydrogens=false;
+	else useHydrogens=true;
+
+
 
 	
 		
@@ -120,11 +148,11 @@ int main(int ac, char* av[])
 	Molecule *mol;
 	
 	if(path(struc).extension().compare(string(".gro"))==0){
-		mol = dfgro.digestGRO(*top);
+		mol = dfgro.digestGRO(*top,useHydrogens);
 
 	}
 	else if(path(struc).extension().compare(string(".pdb"))==0){
-		mol = dfgro.digestPDB(*top);
+		mol = dfgro.digestPDB(*top,useHydrogens);
 	}
 	else if(path(struc).extension().compare(string(".xyzr"))==0){
 		mol = dfgro.digestXYZR();
@@ -140,36 +168,37 @@ int main(int ac, char* av[])
 	TriforceInterface trii(libraryPath, buffer, slack);
 	double area = trii.calculateSurfaceArea(*mol);
 	
-	if(compare==0){
-		//mol->printxyz();
-		mol->print();
-		printf("TOTAL AREA: %f\n",area);
-	}
+	//mol->printxyz();
+	mol->print(outputfile);
+	fprintf(outputfile,"TOTAL AREA: %f\n",area);
 	
 	if(numericalDetail>0){
-		printf("\nNumerical evaluation\n");
+		fprintf(outputfile,"\nNumerical evaluation\n");
 		DataFile dfgro2(struc);
 		Molecule *mol_numerical;
 		if(path(struc).extension().compare(string(".gro"))==0){
-			mol_numerical = dfgro2.digestGRO(*top);
+			mol_numerical = dfgro2.digestGRO(*top,useHydrogens);
 
 		}
-		if(path(struc).extension().compare(string(".pdb"))==0){
-			mol_numerical = dfgro2.digestPDB(*top);
+		else if(path(struc).extension().compare(string(".pdb"))==0){
+			mol_numerical = dfgro2.digestPDB(*top,useHydrogens);
+		}
+		else{
+			printf("unknown structure file extension\n");
+			exit(-1);
 		}
 		
 		IntegratorNumerical integratorNumerical(numericalDetail,numericalDifference);
 		area_numerical = integratorNumerical.integrate(mol_numerical, -1, &progressbar);
 		
-		if(compare==0){
-			mol_numerical->print();
-			printf("TOTAL AREA: %f\n",area_numerical);
-		}
-		else{
-			mol->printDifference(mol_numerical);
-			printf("TOTAL AREA: %f\n",area - area_numerical);
-		}
+		mol_numerical->print(outputfile);
+		fprintf(outputfile,"TOTAL AREA: %f\n",area_numerical);
 	}
+	
+	trii.printBenchmark(outputfile);
+	
+	
+	if(usingOutputFile) fclose(outputfile);
 
 	
 	
