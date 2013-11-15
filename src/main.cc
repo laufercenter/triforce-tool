@@ -18,9 +18,9 @@ using namespace boost::filesystem;
 Molecule *mol, *mol_numerical;
 string libraryPath, top, struc;
 bool error;
-double area, area_numerical;
+float area, area_numerical;
 int numericalDetail;
-double numericalDifference;
+float numericalDifference;
 int compare;
 string topMode;
 TopologyMode topm;
@@ -34,12 +34,12 @@ bool usingOutputFile;
 
 
 
-void progressbar(double percentage){
+void progressbar(float percentage){
 	int size=80;
 	
 	cout << "\r" "[";
 	for(int i=0; i<size; ++i){
-		if((double)i/(double)(size-1) <= percentage)
+		if((float)i/(float)(size-1) <= percentage)
 			cout << "=";
 		else
 			cout << " ";
@@ -66,7 +66,7 @@ int main(int ac, char* av[])
 			("structure,s", po::value<string>(&struc), "set structure file")
 			("top_mode,m", po::value<string>(&topMode)->default_value(string("gromacs")), "set topology mode")
 			("numerical_detail,n", po::value<int>(&numericalDetail)->default_value(0), "numerical detail (default off)")
-			("numerical_difference,d", po::value<double>(&numericalDifference)->default_value(0), "numerical difference (default off)")
+			("numerical_difference,d", po::value<float>(&numericalDifference)->default_value(0), "numerical difference (default off)")
 			("mld-buffer,b", po::value<unsigned int>(&buffer)->default_value(0), "use b multi layered depth buffers (default 0)")
 			("slack,k", po::value<unsigned int>(&slack)->default_value(6), "use depth-buffer with slack k (default 6)")
 			("hydrogens,y", po::value<unsigned int>(&hydrogens)->default_value(1), "use hydrogens (default on)");
@@ -166,7 +166,7 @@ int main(int ac, char* av[])
 	
 
 	TriforceInterface trii(libraryPath, buffer, slack);
-	double area = trii.calculateSurfaceArea(*mol);
+	float area = trii.calculateSurfaceArea(*mol);
 	
 	//mol->printxyz();
 	mol->print(outputfile);
