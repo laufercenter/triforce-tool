@@ -28,8 +28,8 @@ unsigned int buffer;
 unsigned int slack;
 unsigned int hydrogens;
 bool useHydrogens;
-string output;
-FILE* outputfile;
+string output, output2;
+FILE *outputfile, *outputfile2;
 bool usingOutputFile;
 
 
@@ -61,6 +61,7 @@ int main(int ac, char* av[])
 		desc.add_options()
 			("help,h", "help")
 			("output,o", po::value<string>(&output), "set output file")
+			("output2,g", po::value<string>(&output2), "set output2 file")
 			("library_path,l", po::value<string>(&libraryPath), "set library path")
 			("topology,t", po::value<string>(&top), "set topology file")
 			("structure,s", po::value<string>(&struc), "set structure file")
@@ -118,6 +119,11 @@ int main(int ac, char* av[])
 			usingOutputFile=true;
 		}
 		else outputfile = stdout;
+		if(vm.count("output2")){
+			outputfile2 = fopen(output2.c_str(),"w");
+			usingOutputFile=true;
+		}
+		else outputfile2 = stdout;
 		
 		if(error){
 			cout << desc << "\n";
@@ -169,7 +175,8 @@ int main(int ac, char* av[])
 	
 	//mol->printxyz();
 	mol->print(outputfile);
-	fprintf(outputfile,"TOTAL AREA: %f\n",area);
+	trii.printTessellation(outputfile2);
+	fprintf(stdout,"TOTAL AREA: %f\n",area);
 	
 	if(numericalDetail>0){
 		fprintf(outputfile,"\nNumerical evaluation\n");
@@ -194,10 +201,13 @@ int main(int ac, char* av[])
 		fprintf(outputfile,"TOTAL AREA: %f\n",area_numerical);
 	}
 	
-	trii.printBenchmark(outputfile);
+	trii.printBenchmark(stdout);
 	
 	
-	if(usingOutputFile) fclose(outputfile);
+	if(usingOutputFile){
+		fclose(outputfile);
+		fclose(outputfile2);
+	}
 
 	
 	
