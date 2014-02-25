@@ -29,8 +29,9 @@ unsigned int slack;
 unsigned int hydrogens;
 bool useHydrogens;
 string output, output2;
-FILE *outputfile, *outputfile2;
-bool usingOutputFile;
+FILE *outputfile0, *outputfile1;
+bool usingOutputFile0;
+bool usingOutputFile1;
 
 
 
@@ -113,17 +114,18 @@ int main(int ac, char* av[])
 			fprintf(stderr, "structure file not set\n");
 			error=true;
 		}
-		usingOutputFile=false;
+		usingOutputFile0=false;
 		if(vm.count("output")){
-			outputfile = fopen(output.c_str(),"w");
-			usingOutputFile=true;
+			outputfile0 = fopen(output.c_str(),"w");
+			usingOutputFile0=true;
 		}
-		else outputfile = stdout;
+		else outputfile0 = stdout;
+		
+		usingOutputFile1=false;
 		if(vm.count("output2")){
-			outputfile2 = fopen(output2.c_str(),"w");
-			usingOutputFile=true;
+			outputfile1 = fopen(output2.c_str(),"w");
+			usingOutputFile1=true;
 		}
-		else outputfile2 = stdout;
 		
 		if(error){
 			cout << desc << "\n";
@@ -171,15 +173,20 @@ int main(int ac, char* av[])
 	
 
 	TriforceInterface trii(libraryPath, buffer, slack);
-	float area = trii.calculateSurfaceArea(*mol);
+	area = trii.calculateSurfaceArea(*mol);
 	
 	//mol->printxyz();
-	mol->print(outputfile);
-	trii.printTessellation(outputfile2);
+	mol->print(outputfile0);
+	
+	if(usingOutputFile1){
+		trii.printSurfaces(*mol,outputfile1);
+	}
+	
+	
 	fprintf(stdout,"TOTAL AREA: %f\n",area);
 	
 	if(numericalDetail>0){
-		fprintf(outputfile,"\nNumerical evaluation\n");
+		fprintf(outputfile0,"\nNumerical evaluation\n");
 		DataFile dfgro2(struc);
 		Molecule *mol_numerical;
 		if(path(struc).extension().compare(string(".gro"))==0){
@@ -197,17 +204,20 @@ int main(int ac, char* av[])
 		IntegratorNumerical integratorNumerical(numericalDetail,numericalDifference);
 		area_numerical = integratorNumerical.integrate(mol_numerical, -1, &progressbar);
 		
-		mol_numerical->print(outputfile);
-		fprintf(outputfile,"TOTAL AREA: %f\n",area_numerical);
+		mol_numerical->print(outputfile0);
+		fprintf(outputfile0,"TOTAL AREA: %f\n",area_numerical);
 	}
 	
 	trii.printBenchmark(stdout);
 	
 	
-	if(usingOutputFile){
-		fclose(outputfile);
-		fclose(outputfile2);
+	if(usingOutputFile0){
+		fclose(outputfile0);
 	}
+	if(usingOutputFile1){
+		fclose(outputfile1);
+	}
+	
 
 	
 	
