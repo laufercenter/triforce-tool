@@ -114,7 +114,7 @@ int main(int ac, char* av[])
 			}
 			else if(topm==GROMACS_GENERIC2){
 				topname=libraryPath+"/generic2.top";
-				topname1=libraryPath+"/elemental.top";				
+				topname1=libraryPath+"/elemental2.top";				
 				topMode=string("generic2");
 			}
 		}
@@ -157,6 +157,7 @@ int main(int ac, char* av[])
 	
 	DataFile dftop(topname);
 	top = dftop.digestTOP(topm);
+
 	
 	if(topm==GROMACS_GENERIC2){
 		DataFile dftop(topname1);
