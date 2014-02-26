@@ -16,7 +16,7 @@ using namespace boost::filesystem;
 
 
 Molecule *mol, *mol_numerical;
-string libraryPath, top, struc;
+string libraryPath, topname, topname1, struc;
 bool error;
 float area, area_numerical;
 int numericalDetail;
@@ -32,7 +32,7 @@ string output, output2;
 FILE *outputfile0, *outputfile1;
 bool usingOutputFile0;
 bool usingOutputFile1;
-
+Topology *top, *top1;
 
 
 void progressbar(float percentage){
@@ -64,7 +64,7 @@ int main(int ac, char* av[])
 			("output,o", po::value<string>(&output), "set output file")
 			("output2,g", po::value<string>(&output2), "set output2 file")
 			("library_path,l", po::value<string>(&libraryPath), "set library path")
-			("topology,t", po::value<string>(&top), "set topology file")
+			("topology,t", po::value<string>(&topname), "set topology file")
 			("structure,s", po::value<string>(&struc), "set structure file")
 			("top_mode,m", po::value<string>(&topMode)->default_value(string("gromacs")), "set topology mode")
 			("numerical_detail,n", po::value<int>(&numericalDetail)->default_value(0), "numerical detail (default off)")
@@ -92,6 +92,9 @@ int main(int ac, char* av[])
 		else if(topMode.compare("elemental")==0){
 			topm=GROMACS_ELEMENTAL;
 		}
+		else if(topMode.compare("generic2")==0){
+			topm=GROMACS_GENERIC2;
+		}
 		
 		
 		
@@ -102,12 +105,17 @@ int main(int ac, char* av[])
 		}
 		if(!vm.count("topology")){
 			if(topm==GROMACS_ELEMENTAL){
-				top=libraryPath+"/elemental.top";
+				topname=libraryPath+"/elemental.top";
 			}
-			else{
-				top=libraryPath+"/generic.top";
+			else if(topm==GROMACS_GENERIC){
+				topname=libraryPath+"/generic.top";
 				topMode=string("generic");
 				topm=GROMACS_GENERIC;
+			}
+			else if(topm==GROMACS_GENERIC2){
+				topname=libraryPath+"/generic2.top";
+				topname1=libraryPath+"/elemental.top";				
+				topMode=string("generic2");
 			}
 		}
 		if(!vm.count("structure")){
@@ -147,8 +155,14 @@ int main(int ac, char* av[])
 		
 		
 	
-	DataFile dftop(top);
-	Topology *top = dftop.digestTOP(topm);
+	DataFile dftop(topname);
+	top = dftop.digestTOP(topm);
+	
+	if(topm==GROMACS_GENERIC2){
+		DataFile dftop(topname1);
+		//add elemental topology on top of other one
+		top = dftop.digestTOP(GROMACS_ELEMENTAL,top);
+	}
 	//top->print();
 	
 	
