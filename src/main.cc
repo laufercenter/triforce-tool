@@ -1,3 +1,9 @@
+/**
+	Copyright (c) 2009-2014 Nils J. D. Drechsel, Christopher J. Fennell, Ken A. Dill, Jordi Villà-Freixa
+	Email: nils.drechsel@gmail.com
+	License: MIT-license, which can be found in file LICENSE.txt as well as here: http://opensource.org/licenses/MIT
+*/
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -180,6 +186,9 @@ int main(int ac, char* av[])
 	else if(path(struc).extension().compare(string(".xyzr"))==0){
 		mol = dfgro.digestXYZR();
 	}
+	else if(path(struc).extension().compare(string(".tri"))==0){
+		mol = dfgro.digestTRI();
+	}
 	else{
 		printf("unknown structure file extension\n");
 		exit(-1);
@@ -187,7 +196,10 @@ int main(int ac, char* av[])
 	
 	
 
-	TriforceInterface trii(libraryPath, buffer, slack);
+	TriforceInterface trii(libraryPath, buffer, slack, &ac, &av);
+	
+	trii.minimise(*mol);
+	exit(0);
 	area = trii.calculateSurfaceArea(*mol);
 	
 	//mol->printxyz();
