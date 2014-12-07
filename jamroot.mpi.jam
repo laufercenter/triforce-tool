@@ -1,0 +1,29 @@
+using clang ;
+
+INCLUDES = 
+triforce.h
+boost/program_options.hpp ;
+
+
+variant mpi : release :  <define>PARALLEL_MPI ;
+
+
+lib triforce : : <name>triforce <search>/usr/local/lib ;
+lib program_options-mt : : <name>boost_program_options-mt <search>/usr/local/lib ;
+lib filesystem-mt : : <name>boost_filesystem-mt <search>/usr/local/lib ;
+lib system-mt : : <name>boost_system-mt <search>/usr/local/lib ;
+lib armadillo : : <name>armadillo <search>/usr/local/lib ;
+lib boost_mpi-mt : : <name>boost_mpi-mt <search>$(LIBRARIES_SEARCH_DIRECTORIES) ;
+
+
+project tft-config : requirements <include>$(INCLUDES) ;
+
+SOURCES = 
+main.cc ;
+
+
+
+exe tft : src/$(SOURCES) triforce boost_mpi-mt system-mt program_options-mt filesystem-mt armadillo ;
+
+install install-bin : tft : <location>/usr/local/bin ;
+

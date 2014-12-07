@@ -15,6 +15,15 @@
 #include <triforce.h>
 
 
+#ifdef PARALLEL_MPI
+	#include <boost/mpi.hpp>
+	#include <boost/serialization/string.hpp>
+	#include <boost/mpi/environment.hpp>
+	#include <boost/mpi/communicator.hpp>
+	namespace mpi = boost::mpi;
+#endif
+
+
 namespace po = boost::program_options;
 
 using namespace boost::filesystem;
@@ -195,22 +204,32 @@ int main(int ac, char* av[])
 	}
 	
 	
-
-	TriforceInterface trii(libraryPath, buffer, slack, &ac, &av);
-	
-	trii.minimise(*mol);
-	exit(0);
+#ifdef PARALLEL_MPI
+	boost::mpi::environment env(ac, av);
+	boost::mpi::communicator world;
+#endif
+	TriforceInterface trii(libraryPath, buffer, slack);
+	//trii.minimise(*mol);
+	//exit(0);
 	area = trii.calculateSurfaceArea(*mol);
 	
 	//mol->printxyz();
+	
+#ifdef PARALLEL_MPI
+	if(world.rank()==0)	mol->print(outputfile0);
+#else
 	mol->print(outputfile0);
+#endif
 	
 	if(usingOutputFile1){
 		trii.printSurfaces(*mol,outputfile1);
 	}
 	
-	
+#ifdef PARALLEL_MPI
+	if(world.rank()==0)	fprintf(stdout,"TOTAL AREA: %f\n",area);
+#else
 	fprintf(stdout,"TOTAL AREA: %f\n",area);
+#endif
 	
 	if(numericalDetail>0){
 		fprintf(outputfile0,"\nNumerical evaluation\n");
@@ -235,7 +254,13 @@ int main(int ac, char* av[])
 		fprintf(outputfile0,"TOTAL AREA: %f\n",area_numerical);
 	}
 	
+	
+#ifdef PARALLEL_MPI
+	if(world.rank()==0)	trii.printBenchmark(stdout);
+#else
 	trii.printBenchmark(stdout);
+#endif	
+	
 	
 	
 	if(usingOutputFile0){
